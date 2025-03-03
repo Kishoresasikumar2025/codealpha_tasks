@@ -1,0 +1,90 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+
+using namespace std;
+
+// Function to encrypt password (basic XOR encryption for demonstration)
+string encryptPassword(string password) {
+    char key = 'X'; // Simple key for XOR encryption
+    for (char &c : password) {
+        c ^= key;
+    }
+    return password;
+}
+
+// Function to register a user
+void registerUser() {
+    string username, password;
+
+    cout << "Enter a username: ";
+    cin >> username;
+    cout << "Enter a password: ";
+    cin >> password;
+
+    // Encrypt the password
+    string encryptedPassword = encryptPassword(password);
+
+    // Save credentials to file
+    ofstream file(username + ".txt");
+    file << username << endl << encryptedPassword;
+    file.close();
+
+    cout << "Registration successful!\n";
+}
+
+// Function to login a user
+bool loginUser() {
+    string username, password, storedUsername, storedPassword;
+
+    cout << "Enter your username: ";
+    cin >> username;
+    cout << "Enter your password: ";
+    cin >> password;
+
+    ifstream file(username + ".txt");
+    if (!file) {
+        cout << "User not found! Please register first.\n";
+        return false;
+    }
+
+    getline(file, storedUsername);
+    getline(file, storedPassword);
+    file.close();
+
+    // Decrypt the stored password
+    string decryptedPassword = encryptPassword(storedPassword);
+
+    if (username == storedUsername && password == decryptedPassword) {
+        cout << "Login successful! Welcome, " << username << "!\n";
+        return true;
+    } else {
+        cout << "Incorrect username or password. Try again.\n";
+        return false;
+    }
+}
+
+int main() {
+    int choice;
+
+    while (true) {
+        cout << "\n--- Login & Registration System ---\n";
+        cout << "1. Register\n2. Login\n3. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1:
+                registerUser();
+                break;
+            case 2:
+                loginUser();
+                break;
+            case 3:
+                cout << "Exiting program.\n";
+                return 0;
+            default:
+                cout << "Invalid choice! Please try again.\n";
+        }
+    }
+}
