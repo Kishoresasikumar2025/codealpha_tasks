@@ -1,0 +1,67 @@
+#include <iostream>
+#include <map>
+#include <vector>
+#include <iomanip>
+
+using namespace std;
+
+// Function to convert letter grades to grade points
+double getGradePoint(string grade) {
+    map<string, double> gradeScale = {
+        {"A+", 10}, {"A", 9}, {"B+", 8}, {"B", 7}, {"C+", 6},
+        {"C", 5}, {"D", 4}, {"F", 0}  // Assuming 'F' means fail
+    };
+    return gradeScale.count(grade) ? gradeScale[grade] : 0;
+}
+
+// Function to calculate GPA
+double calculateGPA(vector<pair<int, string>> courses) {
+    double totalCredits = 0, totalGradePoints = 0;
+
+    for (auto &course : courses) {
+        int credits = course.first;
+        string grade = course.second;
+        totalCredits += credits;
+        totalGradePoints += credits * getGradePoint(grade);
+    }
+
+    return (totalCredits == 0) ? 0 : (totalGradePoints / totalCredits);
+}
+
+int main() {
+    int totalCourses;
+    cout << "Enter the number of courses: ";
+    cin >> totalCourses;
+
+    vector<pair<int, string>> courses;  // Pair of (credits, grade)
+    
+    for (int i = 0; i < totalCourses; i++) {
+        string courseName, grade;
+        int credits;
+
+        cout << "\nEnter course " << i + 1 << " name: ";
+        cin.ignore(); // To handle input buffer issue
+        getline(cin, courseName);
+        cout << "Enter credits for " << courseName << ": ";
+        cin >> credits;
+        cout << "Enter grade (A+, A, B+, B, C+, C, D, F) for " << courseName << ": ";
+        cin >> grade;
+
+        courses.push_back({credits, grade});
+    }
+
+    double semesterGPA = calculateGPA(courses);
+
+    cout << "\n--- Student's Course Grades ---\n";
+    for (auto &course : courses) {
+        cout << "Credits: " << course.first << " - Grade: " << course.second << endl;
+    }
+
+    cout << "\n--- Semester GPA Calculation ---\n";
+    cout << "Total Credits: " << accumulate(courses.begin(), courses.end(), 0,
+                                         [](int sum, pair<int, string> c) { return sum + c.first; }) << endl;
+    cout << fixed << setprecision(2);
+    cout << "Semester GPA: " << semesterGPA << endl;
+
+    return 0;
+}
